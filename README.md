@@ -39,7 +39,7 @@ This will start a local server, open the host dashboard in your browser, and dis
 
 - **Simple hosting**: Run from the terminal with a single command
 - **Easy joining**: Participants scan a QR code, use the copy link button, or enter a PIN
-- **Numbered players**: Each participant joins as `Player 1`, `Player 2`, and so on (a fun-names feature can be added later via a feature branch)
+- **Fun names**: Each participant gets a random animal name (e.g., "Brave 🐼 Panda")
 - **Real-time updates**: Live leaderboard and answer counts powered by WebSockets
 - **Kahoot-style scoring**: Faster correct answers earn more points (500-1000)
 - **YAML quizzes**: Define quizzes with 2-6 choices per question, optional images, and custom time limits
@@ -139,7 +139,7 @@ questions:
 
 1. Scan the QR code or visit the join URL
 2. Enter the 6-digit PIN shown on the host screen
-3. You'll be assigned a sequential player number (preserved if you refresh)
+3. You'll be assigned a random animal name (preserved if you refresh)
 4. Wait in the lobby until the host starts the quiz
 5. Answer each question as fast as possible for maximum points
 6. Your score updates after each reveal phase
@@ -160,7 +160,7 @@ The leaderboard is sorted by total score. During the reveal phase, you can see h
 
 ## Edge Cases Handled
 
-- **Page refresh**: Participants keep their player number and can rejoin
+- **Page refresh**: Participants keep their animal name and can rejoin
 - **Disconnection**: Shown as grayed out on host dashboard; can reconnect anytime
 - **Late joiners**: Cannot join after the quiz has started
 - **Reconnection mid-quiz**: Allowed - participant keeps their score and can continue answering
@@ -181,6 +181,7 @@ pop-quiz/
 │   ├── __init__.py
 │   ├── cli.py             # Command-line interface
 │   ├── models.py          # Data models (Quiz, Question, Participant, etc.)
+│   ├── animals.py         # Random animal name generator
 │   ├── scoring.py         # Points calculation
 │   ├── state.py           # Game state management
 │   ├── server.py          # FastAPI application & WebSocket handlers
@@ -201,6 +202,7 @@ pop-quiz/
 │       ├── join.html      # PIN entry page
 │       └── join.css       # Join page styles
 └── tests/
+    ├── test_animals.py
     ├── test_models.py
     ├── test_scoring.py
     ├── test_state.py

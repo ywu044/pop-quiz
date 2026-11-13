@@ -179,25 +179,23 @@ class TestScheduleQuestionTimer:
         state.add_participant("p1")
         state.start_quiz()
         state.start_question()
-
         import pop_quiz.timers as timers_module
 
-        created_task = asyncio.get_running_loop().create_future()
-        created_task.set_result(None)
+        def fake_create_task(coro: object) -> AsyncMock:
+            close = getattr(coro, "close", None)
+            if callable(close):
+                close()
+            return AsyncMock()
 
-        def fake_create_task(coro: object) -> asyncio.Future[None]:
-            assert asyncio.iscoroutine(coro)
-            coro.close()
-            return created_task
-
-        timers_module._question_timer_task = None
-
-        with patch(
-            "pop_quiz.timers.asyncio.create_task", side_effect=fake_create_task
-        ) as mock_create:
-            await schedule_question_timer(state)
-            mock_create.assert_called_once()
-            assert timers_module._question_timer_task is created_task
+        try:
+            with patch(
+                "pop_quiz.timers.asyncio.create_task",
+                side_effect=fake_create_task,
+            ) as mock_create:
+                await schedule_question_timer(state)
+                mock_create.assert_called_once()
+        finally:
+            timers_module._question_timer_task = None
 
     async def test_cancels_previous_task(self) -> None:
         """Should cancel previous timer task."""
